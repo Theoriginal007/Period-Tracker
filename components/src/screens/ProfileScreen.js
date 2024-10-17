@@ -48,28 +48,6 @@ const ProfileScreen = () => {
           value="28 Days"
         />
       </View>
-
-      {/* Additional Features */}
-      <View style={styles.additionalFeatures}>
-        <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
-          Additional Features
-        </ThemedText>
-        <View style={styles.featureList}>
-          <TextInput
-            style={styles.input}
-            placeholder="Add health notes (e.g. symptoms, mood)"
-            multiline
-          />
-          <View style={styles.featureItem}>
-            <FontAwesome5 name="bell" size={24} color="#FF7F7F" />
-            <ThemedText style={styles.featureText}>Set Cycle Reminders</ThemedText>
-          </View>
-          <View style={styles.featureItem}>
-            <MaterialIcons name="settings" size={24} color="#FF7F7F" />
-            <ThemedText style={styles.featureText}>Edit Profile</ThemedText>
-          </View>
-        </View>
-      </View>
     </ScrollView>
   );
 };
@@ -127,38 +105,6 @@ const styles = StyleSheet.create({
   },
   detailTextContainer: {
     marginLeft: 15,
-  },
-  additionalFeatures: {
-    margin: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  featureList: {
-    backgroundColor: '#FFF',
-    padding: 15,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  featureText: {
-    marginLeft: 15,
-    fontSize: 16,
-  },
-  input: {
-    height: 80,
-    backgroundColor: '#F0F0F0',
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 10,
   },
 });
 
