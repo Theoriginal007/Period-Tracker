@@ -1,17 +1,45 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TextInput, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, TextInput, ScrollView, Button } from 'react-native';
 import { FontAwesome5, MaterialIcons, Entypo } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { ThemedText } from '../../ThemedText';
 
+
 const ProfileScreen = () => {
+  const [profileImage, setProfileImage] = useState(null);
+  const [aboutMe, setAboutMe] = useState('');
+
+  const handleImagePicker = async () => {
+    // Ask the user for permission to access the camera roll
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    // Launch the image picker
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       {/* Profile Picture Section */}
       <View style={styles.profilePictureContainer}>
         <Image
-          source={{ uri: 'https://your-image-url.com/pic.jpg' }} // Replace with a default image or user-uploaded image
+          source={{ uri: profileImage || 'https://your-image-url.com/pic.jpg' }} // Replace with a default image if no image is uploaded
           style={styles.profilePicture}
         />
+        <Button title="Upload Profile Picture" onPress={handleImagePicker} color="#FF7F7F" />
         <ThemedText type="title" style={styles.profileName}>
           Laura Gachanja
         </ThemedText>
@@ -48,6 +76,21 @@ const ProfileScreen = () => {
           value="28 Days"
         />
       </View>
+
+      {/* About Me Section */}
+      <View style={styles.aboutMeContainer}>
+        <ThemedText type="defaultSemiBold" style={styles.aboutMeTitle}>
+          About Me
+        </ThemedText>
+        <TextInput
+          style={styles.aboutMeInput}
+          placeholder="Write a short bio about yourself"
+          multiline
+          numberOfLines={4}
+          value={aboutMe}
+          onChangeText={setAboutMe}
+        />
+      </View>
     </ScrollView>
   );
 };
@@ -79,6 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     borderWidth: 3,
     borderColor: '#FF7F7F',
+    marginBottom: 10,
   },
   profileName: {
     marginTop: 10,
@@ -105,6 +149,26 @@ const styles = StyleSheet.create({
   },
   detailTextContainer: {
     marginLeft: 15,
+  },
+  aboutMeContainer: {
+    margin: 20,
+    padding: 15,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  aboutMeTitle: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  aboutMeInput: {
+    height: 100,
+    backgroundColor: '#F0F0F0',
+    padding: 10,
+    borderRadius: 10,
   },
 });
 
