@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,37 @@ import {
   TouchableOpacity,
   ImageBackground,
   Dimensions,
+  TextInput,
+  Image,
 } from 'react-native';
-import { en } from './EncyclopediaScreen/en';
+import Collapsible from 'react-native-collapsible';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { en } from './EncyclopediaScreen/en'; // Ensure this file contains the initial data
 
 const Encyclopedia = () => {
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [expandedSubCategory, setExpandedSubCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [cachedData, setCachedData] = useState(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await AsyncStorage.getItem('encyclopediaData');
+      if (data) {
+        setCachedData(JSON.parse(data));
+      } else {
+        setCachedData(en); // Use initial data if cache is empty
+        await AsyncStorage.setItem('encyclopediaData', JSON.stringify(en));
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const filteredCategories = cachedData?.categories.allIds.filter(categoryId => {
+    const category = cachedData.categories.byId[categoryId];
+    return category.name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   const handleCategoryPress = (categoryId) => {
     setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
@@ -28,11 +53,14 @@ const Encyclopedia = () => {
       source={require('../../../assets/images/backgrounds/desert-default.png')}
       style={styles.background}
     >
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search..."
+        onChangeText={text => setSearchQuery(text)}
+      />
       <ScrollView contentContainerStyle={styles.container}>
-  
-        {en.categories.allIds.map((categoryId) => {
-          const category = en.categories.byId[categoryId];
-          // Ensure the category exists
+        {filteredCategories?.map((categoryId) => {
+          const category = cachedData.categories.byId[categoryId];
           if (!category) {
             console.warn(`Category with ID ${categoryId} not found.`);
             return null; // Skip this category if not found
@@ -44,12 +72,10 @@ const Encyclopedia = () => {
                   {category.name} {category.tags.primary.emoji}
                 </Text>
               </TouchableOpacity>
-              {/* Show subcategories when the category is expanded */}
-              {expandedCategory === categoryId && (
+              <Collapsible collapsed={expandedCategory !== categoryId}>
                 <View style={styles.subCategoryContainer}>
                   {category.subCategories.map((subCategoryId) => {
-                    const subCategory = en.subCategories.byId[subCategoryId];
-                    // Ensure the subcategory exists
+                    const subCategory = cachedData.subCategories.byId[subCategoryId];
                     if (!subCategory) {
                       console.warn(`Subcategory with ID ${subCategoryId} not found.`);
                       return null; // Skip this subcategory if not found
@@ -61,30 +87,31 @@ const Encyclopedia = () => {
                             {subCategory.name}
                           </Text>
                         </TouchableOpacity>
-                        {/* Show articles when the subcategory is expanded */}
-                        {expandedSubCategory === subCategoryId && (
+                        <Collapsible collapsed={expandedSubCategory !== subCategoryId}>
                           <View style={styles.contentContainer}>
                             {subCategory.articles.map((articleId) => {
-                              const article = en.articles.byId[articleId];
-                              // Ensure the article exists
+                              const article = cachedData.articles.byId[articleId];
                               if (!article) {
                                 console.warn(`Article with ID ${articleId} not found.`);
                                 return null;
                               }
                               return (
                                 <View key={articleId} style={styles.article}>
+                                  <Image source={{ uri: article.imageUrl }} style={styles.articleImage} />
                                   <Text style={styles.articleTitle}>{article.title}</Text>
                                   <Text style={styles.articleContent}>{article.content}</Text>
+                                  <Text style={styles.articleInfo}>Author: {article.author}</Text>
+                                  <Text style={styles.articleInfo}>Published: {article.date}</Text>
                                 </View>
                               );
                             })}
                           </View>
-                        )}
+                        </Collapsible>
                       </View>
                     );
                   })}
                 </View>
-              )}
+              </Collapsible>
             </View>
           );
         })}
@@ -97,7 +124,7 @@ const Encyclopedia = () => {
 export default Encyclopedia;
 
 export const screenOptions = {
-  title: 'Period💅', 
+  title: 'Period💅',
   headerStyle: {
     backgroundColor: '#f7287b',
   },
@@ -114,40 +141,59 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginVertical: 20, // Adjust margin for spacing
-    marginLeft: 10, // Align to the left
-    color: '#fff', // Change this to your desired color
+  searchInput: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    margin: 15,
+    backgroundColor: '#fff',
+  },
+  container: {
+    padding: 15,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
   },
   category: {
-    marginVertical: 10,
+    width: '45%',
+    margin: 5,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    elevation: 2,
   },
   categoryTitle: {
     fontSize: 18,
     fontWeight: '600',
     padding: 10,
-    backgroundColor: '#f1f1f1', // Adjust background color as needed
+    backgroundColor: '#f1f1f1',
     borderRadius: 5,
+    textAlign: 'center',
   },
   subCategoryContainer: {
-    marginLeft: 10,
+    marginTop: 5,
   },
   subCategory: {
-    marginVertical: 5,
+    width: '90%',
+    margin: 5,
   },
   subCategoryTitle: {
     fontSize: 16,
     padding: 8,
-    backgroundColor: '#e0e0e0', // Adjust background color as needed
+    backgroundColor: '#e0e0e0',
     borderRadius: 5,
+    textAlign: 'center',
   },
   contentContainer: {
-    marginLeft: 20,
+    marginTop: 5,
   },
   article: {
     marginVertical: 5,
+    padding: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 5,
+    elevation: 1,
   },
   articleTitle: {
     fontSize: 14,
@@ -156,5 +202,15 @@ const styles = StyleSheet.create({
   articleContent: {
     fontSize: 12,
     color: '#333',
+  },
+  articleInfo: {
+    fontSize: 10,
+    color: '#777',
+  },
+  articleImage: {
+    width: '100%',
+    height: 150,
+    borderRadius: 5,
+    marginBottom: 5,
   },
 });
