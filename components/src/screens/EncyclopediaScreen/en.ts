@@ -4,52 +4,52 @@ export const en = {
       byId: {
         health: {
           name: 'Menstruation and menstrual cycle',
-          tags: { primary: { emoji: ':red_circle:' } },
+          tags: { primary: { emoji: '🔴' } },
           subCategories: ['menstruation_period', 'missed_period','flow_period'],
         },
         reproductive_health: {
           name: 'Managing menstruation',
-          tags: { primary: { emoji: ':womens:' } },
+          tags: { primary: { emoji: '🚺' } },
           subCategories: ['hygiene_managing', 'sanitary_managing','pain_managing',],
         },
         nutrition_health: {
             name: 'Health, nutrition and exercise',
-            tags: { primary: { emoji: ':green_heart:' } },
+            tags: { primary: { emoji: '💚' } },
             subCategories: [],
           },
           Puberty_health: {
             name: 'Puberty',
-            tags: { primary: { emoji: ':tulip:' } },
+            tags: { primary: { emoji: '🌷🌷' } },
             subCategories: [],
           },
           myths_health: {
             name: 'Myths and feelings',
-            tags: { primary: { emoji: ':sweat:' } },
+            tags: { primary: { emoji: '😥' } },
             subCategories: [],
           },
           period_health: {
             name: 'Periods and life',
-            tags: { primary: { emoji: ':sun_with_face:' } },
+            tags: { primary: { emoji: '🌞' } },
             subCategories: [],
           },
           oky_health: {
             name: 'Using Oky',
-            tags: { primary: { emoji: ':iphone:' } },
+            tags: { primary: { emoji: '📲:iphone:' } },
             subCategories: [],
           },
           safe_health: {
             name: 'Violence and staying safe',
-            tags: { primary: { emoji: ':loudspeaker:' } },
+            tags: { primary: { emoji: '🔊' } },
             subCategories: [],
           },
           my_rights: {
             name: 'My rights',
-            tags: { primary: { emoji: ':page_with_curl:' } },
+            tags: { primary: { emoji: '📃' } },
             subCategories: [],
           },
           mental_health: {
             name: 'Mental health',
-            tags: { primary: { emoji: ':ok:' } },
+            tags: { primary: { emoji: '👌' } },
             subCategories: [],
           },
       },

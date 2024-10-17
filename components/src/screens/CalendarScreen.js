@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert, Button } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { format, addMonths, subMonths, isSameMonth, isValid } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Ionicons } from '@expo/vector-icons';
 
 const CalendarScreen = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [markedDays, setMarkedDays] = useState([]);
   const [periodStart, setPeriodStart] = useState(new Date());
   const [periodEnd, setPeriodEnd] = useState(new Date());
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
-  const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const getDaysInMonth = () => {
     const year = currentDate.getFullYear();
@@ -24,7 +21,8 @@ const CalendarScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        {/* Other header components */}
+        <Text style={styles.headerText}>Last Period Start: {format(periodStart, 'yyyy-MM-dd')}</Text>
+        <Text style={styles.headerText}>Expected Next Period Start: {format(periodEnd, 'yyyy-MM-dd')}</Text>
       </View>
 
       <FlatList
@@ -32,7 +30,7 @@ const CalendarScreen = () => {
         keyExtractor={(item) => item.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity>
-            <Text>{format(item, 'dd')}</Text>
+            <Text style={styles.dayText}>{format(item, 'dd')}</Text>
           </TouchableOpacity>
         )}
         numColumns={7}
@@ -40,7 +38,7 @@ const CalendarScreen = () => {
 
       <View style={styles.inputContainer}>
         <TouchableOpacity onPress={() => setShowStartPicker(true)}>
-          <Text style={styles.input}>Start Date: {format(periodStart, 'yyyy-MM-dd')}</Text>
+          <Text style={styles.input}>Select Last Period Start Date</Text>
         </TouchableOpacity>
         {showStartPicker && (
           <DateTimePicker
@@ -56,7 +54,7 @@ const CalendarScreen = () => {
           />
         )}
         <TouchableOpacity onPress={() => setShowEndPicker(true)}>
-          <Text style={styles.input}>End Date: {format(periodEnd, 'yyyy-MM-dd')}</Text>
+          <Text style={styles.input}>Select Expected Next Period Start Date</Text>
         </TouchableOpacity>
         {showEndPicker && (
           <DateTimePicker
@@ -83,7 +81,12 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   headerContainer: {
-    // Styles for header
+    marginBottom: 20,
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 5,
   },
   inputContainer: {
     marginTop: 20,
@@ -93,6 +96,12 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 5,
+    marginVertical: 5,
+    textAlign: 'center',
+  },
+  dayText: {
+    padding: 10,
+    textAlign: 'center', // Centers the text in the day box
   },
 });
 
