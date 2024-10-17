@@ -7,7 +7,7 @@ import { ThemedText } from '../../ThemedText';
 const ProfileScreen = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [aboutMe, setAboutMe] = useState('');
-  const [isEditing, setIsEditing] = useState(false); // New state for edit mode
+  const [isEditing, setIsEditing] = useState(false); // State for edit mode
 
   const handleImagePicker = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -39,10 +39,12 @@ const ProfileScreen = () => {
     <ScrollView style={styles.container}>
       {/* Profile Picture Section */}
       <View style={styles.profilePictureContainer}>
-        <Image
-          source={{ uri: profileImage || 'https://your-image-url.com/pic.jpg' }} // Replace with a default image if no image is uploaded
-          style={styles.profilePicture}
-        />
+        <View style={styles.circle}>
+          <Image
+            source={{ uri: profileImage || 'https://your-image-url.com/pic.jpg' }} // Replace with a default image if no image is uploaded
+            style={styles.profilePicture}
+          />
+        </View>
         <Button title="Upload Profile Picture" onPress={handleImagePicker} color="#FF7F7F" />
         <ThemedText type="title" style={styles.profileName}>
           Laura Gachanja
@@ -133,13 +135,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 20,
   },
-  profilePicture: {
+  circle: {
     width: 120,
     height: 120,
     borderRadius: 60,
+    overflow: 'hidden',
     borderWidth: 3,
     borderColor: '#FF7F7F',
-    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF', // Optional: to provide a background color behind the image
+  },
+  profilePicture: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 60,
+    resizeMode: 'cover', // Ensures the image covers the circular area
   },
   profileName: {
     marginTop: 10,
