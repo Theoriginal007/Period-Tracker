@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, ScrollView, Button } from 'react-native';
+import { View, Text, Image, StyleSheet, TextInput, ScrollView, Button, Alert } from 'react-native';
 import { FontAwesome5, MaterialIcons, Entypo } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { ThemedText } from '../../ThemedText';
 
-
 const ProfileScreen = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [aboutMe, setAboutMe] = useState('');
+  const [isEditing, setIsEditing] = useState(false); // New state for edit mode
 
   const handleImagePicker = async () => {
-    // Ask the user for permission to access the camera roll
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
@@ -18,7 +17,6 @@ const ProfileScreen = () => {
       return;
     }
 
-    // Launch the image picker
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -29,6 +27,12 @@ const ProfileScreen = () => {
     if (!result.canceled) {
       setProfileImage(result.assets[0].uri);
     }
+  };
+
+  const handleSaveBio = () => {
+    // Implement your saving logic here, e.g., saving to a server or local storage
+    Alert.alert("Bio Saved", `Your bio has been saved: "${aboutMe}"`);
+    setIsEditing(false); // Exit edit mode after saving
   };
 
   return (
@@ -42,9 +46,6 @@ const ProfileScreen = () => {
         <Button title="Upload Profile Picture" onPress={handleImagePicker} color="#FF7F7F" />
         <ThemedText type="title" style={styles.profileName}>
           Laura Gachanja
-        </ThemedText>
-        <ThemedText type="subtitle" style={styles.profileUsername}>
-          @laura_gachanja
         </ThemedText>
       </View>
 
@@ -82,14 +83,30 @@ const ProfileScreen = () => {
         <ThemedText type="defaultSemiBold" style={styles.aboutMeTitle}>
           About Me
         </ThemedText>
-        <TextInput
-          style={styles.aboutMeInput}
-          placeholder="Write a short bio about yourself"
-          multiline
-          numberOfLines={4}
-          value={aboutMe}
-          onChangeText={setAboutMe}
-        />
+        {isEditing ? (
+          <>
+            <TextInput
+              style={styles.aboutMeInput}
+              placeholder="Write a short bio about yourself"
+              multiline
+              numberOfLines={4}
+              value={aboutMe}
+              onChangeText={setAboutMe}
+            />
+            <Button title="Save Bio" onPress={handleSaveBio} color="#FF7F7F" />
+          </>
+        ) : (
+          <>
+            <ThemedText type="default">{aboutMe || "No bio available. Click the pencil icon to add one."}</ThemedText>
+            <FontAwesome5 
+              name="edit" 
+              size={24} 
+              color="#FF7F7F" 
+              onPress={() => setIsEditing(true)} 
+              style={styles.editIcon} 
+            />
+          </>
+        )}
       </View>
     </ScrollView>
   );
@@ -128,10 +145,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 24,
   },
-  profileUsername: {
-    fontSize: 16,
-    color: '#888',
-  },
   detailsContainer: {
     marginHorizontal: 20,
     padding: 15,
@@ -169,6 +182,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F0F0',
     padding: 10,
     borderRadius: 10,
+    marginBottom: 10,
+  },
+  editIcon: {
+    marginTop: 10,
+    alignSelf: 'flex-end',
   },
 });
 
