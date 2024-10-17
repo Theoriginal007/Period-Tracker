@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format, isValid } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const CalendarScreen = () => {
+const PrideScreen = ({ navigation }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [periodStart, setPeriodStart] = useState(new Date());
   const [periodEnd, setPeriodEnd] = useState(new Date());
@@ -17,6 +16,11 @@ const CalendarScreen = () => {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     return Array.from({ length: daysInMonth }, (_, i) => new Date(year, month, i + 1));
   };
+
+  // Set the title of the header
+  useLayoutEffect(() => {
+    navigation.setOptions({ headerTitle: 'Period💅' }); // Header title
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -101,8 +105,8 @@ const styles = StyleSheet.create({
   },
   dayText: {
     padding: 10,
-    textAlign: 'center', // Centers the text in the day box
+    textAlign: 'center',
   },
 });
 
-export default CalendarScreen;
+export default PrideScreen;

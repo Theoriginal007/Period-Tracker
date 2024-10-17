@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, Image, StyleSheet, TextInput, ScrollView, Button, Alert } from 'react-native';
 import { FontAwesome5, MaterialIcons, Entypo } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { ThemedText } from '../../ThemedText';
+import { ThemedText } from '../../ThemedText'; // Adjust the import path based on your project structure
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
   const [profileImage, setProfileImage] = useState(null);
   const [aboutMe, setAboutMe] = useState('');
   const [isEditing, setIsEditing] = useState(false); // State for edit mode
+
+  // Set the title to "Period" for the screen
+  useLayoutEffect(() => {
+    navigation.setOptions({ headerTitle: 'Period💅' }); // This sets the title for the header
+  }, [navigation]);
 
   const handleImagePicker = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -201,4 +206,5 @@ const styles = StyleSheet.create({
   },
 });
 
+// Export the component
 export default ProfileScreen;

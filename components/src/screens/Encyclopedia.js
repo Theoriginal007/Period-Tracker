@@ -1,22 +1,35 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground,Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ImageBackground,
+  Dimensions,
+} from 'react-native';
 import { en } from './EncyclopediaScreen/en';
+
 const Encyclopedia = () => {
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [expandedSubCategory, setExpandedSubCategory] = useState(null);
+
   const handleCategoryPress = (categoryId) => {
     setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
     setExpandedSubCategory(null); // Collapse subcategories when changing categories
   };
+
   const handleSubCategoryPress = (subCategoryId) => {
     setExpandedSubCategory(expandedSubCategory === subCategoryId ? null : subCategoryId);
   };
+
   return (
     <ImageBackground
-    source={require('../../../assets/images/backgrounds/desert-default.png')}
-    style={styles.background}
+      source={require('../../../assets/images/backgrounds/desert-default.png')}
+      style={styles.background}
     >
       <ScrollView contentContainerStyle={styles.container}>
+  
         {en.categories.allIds.map((categoryId) => {
           const category = en.categories.byId[categoryId];
           // Ensure the category exists
@@ -79,12 +92,69 @@ const Encyclopedia = () => {
     </ImageBackground>
   );
 };
-const styles = StyleSheet.create({
-  background:{
-    flex:1,
-    resizeMode:'cover',
-    width:Dimensions.get('window').width,
-    height:Dimensions.get('window').height,
-  }
-})
+
+// Export the component with navigation options
 export default Encyclopedia;
+
+export const screenOptions = {
+  title: 'Period💅', 
+  headerStyle: {
+    backgroundColor: '#f7287b',
+  },
+  headerTitleStyle: {
+    fontWeight: 'bold',
+  },
+  headerTintColor: 'white',
+};
+
+const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginVertical: 20, // Adjust margin for spacing
+    marginLeft: 10, // Align to the left
+    color: '#fff', // Change this to your desired color
+  },
+  category: {
+    marginVertical: 10,
+  },
+  categoryTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    padding: 10,
+    backgroundColor: '#f1f1f1', // Adjust background color as needed
+    borderRadius: 5,
+  },
+  subCategoryContainer: {
+    marginLeft: 10,
+  },
+  subCategory: {
+    marginVertical: 5,
+  },
+  subCategoryTitle: {
+    fontSize: 16,
+    padding: 8,
+    backgroundColor: '#e0e0e0', // Adjust background color as needed
+    borderRadius: 5,
+  },
+  contentContainer: {
+    marginLeft: 20,
+  },
+  article: {
+    marginVertical: 5,
+  },
+  articleTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  articleContent: {
+    fontSize: 12,
+    color: '#333',
+  },
+});
