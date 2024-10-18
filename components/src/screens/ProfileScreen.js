@@ -88,7 +88,7 @@ const ProfileScreen = ({ navigation }) => {
       {/* About Me Section */}
       <View style={styles.aboutMeContainer}>
         <ThemedText type="defaultSemiBold" style={styles.aboutMeTitle}>
-          About Me
+          Bio
         </ThemedText>
         {isEditing ? (
           <>

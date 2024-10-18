@@ -1,19 +1,19 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CalendarScreen from './components/src/screens/CalendarScreen';
 import Encyclopedia from './components/src/screens/Encyclopedia';
-import AccessSettings from './components/src/screens/AccessSettings';
+import AccessSettings from './components/src/screens/Settings/AccessSettings';
 import ProfileScreen from './components/src/screens/ProfileScreen';
+import AboutSettings from './components/src/screens/Settings/AboutSettings';
+import PrivacyPolicy from './components/src/screens/Settings/PrivacyPolicy';
 import { I18nextProvider } from 'react-i18next';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import 'intl-pluralrules';
-import { Picker } from '@react-native-picker/picker';
-
-
 
 // Initialize i18next
 i18n
@@ -30,9 +30,21 @@ i18n
     },
   });
 
+// Create Tab and Stack Navigators
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-export default function App() {
+// Settings Stack Navigator
+const SettingsStack = () => (
+  <Stack.Navigator initialRouteName="AccessSettings">
+    <Stack.Screen name="AccessSettings" component={AccessSettings} options={{ title: 'Settings' }} />
+    <Stack.Screen name="AboutSettings" component={AboutSettings} options={{ title: 'About Settings' }} />
+    <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} options={{ title: 'Privacy Policy' }} />
+  </Stack.Navigator>
+);
+
+// Main App Component
+const App = () => {
   return (
     <I18nextProvider i18n={i18n}>
       <NavigationContainer>
@@ -40,14 +52,21 @@ export default function App() {
           screenOptions={({ route }) => ({
             tabBarIcon: ({ color, size }) => {
               let iconName;
-              if (route.name === 'Profile') {
-                iconName = 'account-outline';
-              } else if (route.name === 'Calendar') {
-                iconName = 'calendar';
-              } else if (route.name === 'Encyclopedia') {
-                iconName = 'book-outline';
-              } else if (route.name === 'Settings') {
-                iconName = 'cog-outline';
+              switch (route.name) {
+                case 'Profile':
+                  iconName = 'account-outline';
+                  break;
+                case 'Calendar':
+                  iconName = 'calendar';
+                  break;
+                case 'Encyclopedia':
+                  iconName = 'book-outline';
+                  break;
+                case 'Settings':
+                  iconName = 'cog-outline';
+                  break;
+                default:
+                  iconName = 'help-circle-outline';
               }
               return <Icon name={iconName} color={color} size={size} />;
             },
@@ -56,13 +75,15 @@ export default function App() {
           <Tab.Screen name="Profile" component={ProfileScreen} />
           <Tab.Screen name="Calendar" component={CalendarScreen} />
           <Tab.Screen name="Encyclopedia" component={Encyclopedia} />
-          <Tab.Screen name="Settings" component={AccessSettings} />
+          <Tab.Screen name="Settings" component={SettingsStack} />
         </Tab.Navigator>
       </NavigationContainer>
     </I18nextProvider>
   );
-}
+};
 
 const styles = StyleSheet.create({
   // Add your styles here
 });
+
+export default App;
