@@ -1,112 +1,237 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useColorScheme } from 'react-native';
 import { format, isValid } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { lightTheme, darkTheme } from './theme';
+import { ThemedText } from '../../ThemedText';
+import { ThemedCard } from '../../ThemedCard';
+import { PhaseIndicator } from '../../PhaseIndicator';
+import { CycleProgress } from '../../CycleProgress';
+import { TipsCard } from '../../TipsCard';
+import { CalendarGrid } from '../../CalendarGrid';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const PrideScreen = ({ navigation }) => {
+const CalendarScreen = ({ navigation }) => {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
+  
   const [currentDate, setCurrentDate] = useState(new Date());
   const [periodStart, setPeriodStart] = useState(new Date());
   const [periodEnd, setPeriodEnd] = useState(new Date());
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
 
-  const getDaysInMonth = () => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    return Array.from({ length: daysInMonth }, (_, i) => new Date(year, month, i + 1));
-  };
+  const tips = [
+    "Perfect time to start new projects",
+    "Focus on iron-rich foods like spinach and lentils", 
+    "Stay hydrated and get plenty of rest"
+  ];
 
-  // Set the title of the header
+  const periodDays = [3, 4, 5, 6, 7];
+  const ovulationDays = [14, 15];
+
   useLayoutEffect(() => {
-    navigation.setOptions({ headerTitle: 'Period💅' }); // Header title
-  }, [navigation]);
+    navigation.setOptions({ 
+      headerTitle: 'Period💅',
+      headerStyle: {
+        backgroundColor: theme.background,
+      },
+      headerTintColor: theme.title,
+    });
+  }, [navigation, theme]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Last Period Start: {format(periodStart, 'yyyy-MM-dd')}</Text>
-        <Text style={styles.headerText}>Expected Next Period Start: {format(periodEnd, 'yyyy-MM-dd')}</Text>
-      </View>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <ScrollView style={styles.scrollView}>
+        {/* Header Card */}
+        <ThemedCard>
+          <View style={styles.headerContent}>
+            <View style={styles.greetingContainer}>
+              <ThemedText type="title" style={[styles.greeting, { color: theme.title }]}>
+                Calendar
+              </ThemedText>
+              <TouchableOpacity 
+                style={[styles.calendarIcon, { backgroundColor: theme.primaryLight }]}
+                onPress={() => navigation.navigate('Log')}
+              >
+                <MaterialCommunityIcons 
+                  name="plus" 
+                  size={24} 
+                  color={theme.primary} 
+                />
+              </TouchableOpacity>
+            </View>
+            <ThemedText type="default" style={[styles.subtitle, { color: theme.description }]}>
+              Track your cycle and view predictions
+            </ThemedText>
+          </View>
+        </ThemedCard>
 
-      <FlatList
-        data={getDaysInMonth()}
-        keyExtractor={(item) => item.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity>
-            <Text style={styles.dayText}>{format(item, 'dd')}</Text>
+        {/* Phase Indicator */}
+        <ThemedCard>
+          <PhaseIndicator 
+            phase="Follicular Phase"
+            description="Your energy is building up"
+            icon="star-four-points"
+          />
+          
+          <CycleProgress 
+            currentDay={8}
+            totalDays={28}
+            phase="Follicular"
+          />
+        </ThemedCard>
+
+        {/* Calendar Month View */}
+        <ThemedCard>
+          <ThemedText type="defaultSemiBold" style={[styles.monthTitle, { color: theme.title }]}>
+            June 2025
+          </ThemedText>
+          <View style={styles.legendContainer}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: theme.primary }]} />
+              <ThemedText type="default" style={{ color: theme.text }}>Period</ThemedText>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: theme.secondary }]} />
+              <ThemedText type="default" style={{ color: theme.text }}>Ovulation</ThemedText>
+            </View>
+          </View>
+          
+          <CalendarGrid
+            month={5}
+            year={2025}
+            periodDays={periodDays}
+            ovulationDays={ovulationDays}
+          />
+        </ThemedCard>
+
+        {/* Date Pickers */}
+        <ThemedCard>
+          <ThemedText type="defaultSemiBold" style={[styles.sectionTitle, { color: theme.title }]}>
+            Period Tracking
+          </ThemedText>
+          
+          <TouchableOpacity 
+            style={[styles.dateButton, { borderColor: theme.border }]}
+            onPress={() => setShowStartPicker(true)}
+          >
+            <ThemedText type="default" style={{ color: theme.text }}>
+              Last Period: {format(periodStart, 'MMM dd, yyyy')}
+            </ThemedText>
+            <MaterialCommunityIcons name="chevron-right" size={20} color={theme.description} />
           </TouchableOpacity>
-        )}
-        numColumns={7}
-      />
 
-      <View style={styles.inputContainer}>
-        <TouchableOpacity onPress={() => setShowStartPicker(true)}>
-          <Text style={styles.input}>Select Last Period Start Date</Text>
-        </TouchableOpacity>
-        {showStartPicker && (
-          <DateTimePicker
-            value={periodStart}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setShowStartPicker(false);
-              if (selectedDate && isValid(selectedDate)) {
-                setPeriodStart(selectedDate);
-              }
-            }}
-          />
-        )}
-        <TouchableOpacity onPress={() => setShowEndPicker(true)}>
-          <Text style={styles.input}>Select Expected Next Period Start Date</Text>
-        </TouchableOpacity>
-        {showEndPicker && (
-          <DateTimePicker
-            value={periodEnd}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setShowEndPicker(false);
-              if (selectedDate && isValid(selectedDate)) {
-                setPeriodEnd(selectedDate);
-              }
-            }}
-          />
-        )}
-      </View>
+          <TouchableOpacity 
+            style={[styles.dateButton, { borderColor: theme.border }]}
+            onPress={() => setShowEndPicker(true)}
+          >
+            <ThemedText type="default" style={{ color: theme.text }}>
+              Next Expected: {format(periodEnd, 'MMM dd, yyyy')}
+            </ThemedText>
+            <MaterialCommunityIcons name="chevron-right" size={20} color={theme.description} />
+          </TouchableOpacity>
+        </ThemedCard>
+
+        {/* Tips Card */}
+        <ThemedCard>
+          <TipsCard tips={tips} />
+        </ThemedCard>
+      </ScrollView>
+
+      {/* Date Picker Modals */}
+      {showStartPicker && (
+        <DateTimePicker
+          value={periodStart}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShowStartPicker(false);
+            if (selectedDate && isValid(selectedDate)) {
+              setPeriodStart(selectedDate);
+            }
+          }}
+        />
+      )}
+      
+      {showEndPicker && (
+        <DateTimePicker
+          value={periodEnd}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShowEndPicker(false);
+            if (selectedDate && isValid(selectedDate)) {
+              setPeriodEnd(selectedDate);
+            }
+          }}
+        />
+      )}
     </View>
   );
 };
 
-// Define your styles here
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
   },
-  headerContainer: {
+  scrollView: {
+    flex: 1,
+  },
+  headerContent: {
+    marginBottom: 8,
+  },
+  greetingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  greeting: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  calendarIcon: {
+    padding: 12,
+    borderRadius: 12,
+  },
+  subtitle: {
+    fontSize: 16,
+  },
+  monthTitle: {
+    fontSize: 20,
+    marginBottom: 16,
+  },
+  legendContainer: {
+    flexDirection: 'row',
     marginBottom: 20,
   },
-  headerText: {
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  legendDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 5,
+    marginBottom: 16,
   },
-  inputContainer: {
-    marginTop: 20,
-  },
-  input: {
-    padding: 10,
-    borderColor: 'gray',
+  dateButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     borderWidth: 1,
-    borderRadius: 5,
-    marginVertical: 5,
-    textAlign: 'center',
-  },
-  dayText: {
-    padding: 10,
-    textAlign: 'center',
+    borderRadius: 12,
+    marginBottom: 12,
   },
 });
 
-export default PrideScreen;
+export default CalendarScreen;
