@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useColorScheme } from 'react-native';
@@ -43,7 +44,11 @@ const CalendarScreen = ({ navigation }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header Card */}
         <ThemedCard>
           <View style={styles.headerContent}>
@@ -179,14 +184,18 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    paddingTop: 4,
+    paddingBottom: 16,
+  },
   headerContent: {
-    marginBottom: 8,
+    marginBottom: 4,
   },
   greetingContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   greeting: {
     fontSize: 24,
